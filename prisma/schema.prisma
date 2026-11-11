@@ -1,0 +1,354 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  STUDENT
+  ADMIN
+}
+
+enum StudyYear {
+  B1
+  B2
+  B3
+  B4
+}
+
+enum SearchGoal {
+  STAGE
+  ALTERNANCE
+}
+
+enum ContractType {
+  STAGE
+  ALTERNANCE
+  APPRENTISSAGE
+  PROFESSIONNALISATION
+  CDI
+  CDD
+  AUTRE
+}
+
+enum ApplicationStatus {
+  BROUILLON
+  A_VALIDER
+  ENVOYEE
+  EN_ATTENTE
+  ENTRETIEN
+  REFUSEE
+  ACCEPTEE
+  RELANCE_NECESSAIRE
+}
+
+enum MessageKind {
+  EMAIL
+  MOTIVATION
+  LETTRE
+  SPONTANEE
+}
+
+enum EmailProvider {
+  GMAIL
+  OUTLOOK
+}
+
+enum FollowUpStatus {
+  PLANIFIEE
+  ENVOYEE
+  ANNULEE
+}
+
+enum SourceKind {
+  API_OFFICIELLE
+  JOBBOARD
+  AGREGATEUR
+  SITE_CARRIERE
+  MEDIA
+  LIEN_RECHERCHE
+  DEMO
+}
+
+model User {
+  id               String    @id @default(cuid())
+  email            String    @unique
+  passwordHash     String
+  role             Role      @default(STUDENT)
+  consentAt        DateTime? // consentement RGPD explicite
+  aiConsentAt      DateTime? // accord explicite d'envoi du CV à un LLM hébergé
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  deletedAt        DateTime?
+
+  profile          StudentProfile?
+  sessions         Session[]
+  resetTokens      PasswordResetToken[]
+  resumes          Resume[]
+  matches          JobMatch[]
+  favorites        Favorite[]
+  applications     Application[]
+  messages         GeneratedMessage[]
+  emailAccounts    EmailAccount[]
+  followUps        FollowUp[]
+  logs             ActivityLog[]
+}
+
+model Session {
+  id         String   @id @default(cuid())
+  userId     String
+  tokenHash  String   @unique
+  userAgent  String?
+  ip         String?
+  createdAt  DateTime @default(now())
+  expiresAt  DateTime
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model PasswordResetToken {
+  id        String    @id @default(cuid())
+  userId    String
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model StudentProfile {
+  id               String       @id @default(cuid())
+  userId           String       @unique
+  firstName        String?
+  lastName         String?
+  phone            String?
+  formation        String?
+  studyYear        StudyYear?
+  goal             SearchGoal   @default(ALTERNANCE)
+  locations        String[]
+  keywords         String[]
+  dailySendLimit   Int          @default(10)
+  followUpDays     Int[]        @default([7, 15])
+  anonymizeForAi   Boolean      @default(true)
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+  user             User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  skills           Skill[]
+  experiences      Experience[]
+}
+
+model Resume {
+  id           String   @id @default(cuid())
+  userId       String
+  fileName     String
+  mimeType     String
+  sizeBytes    Int
+  storagePath  String // chemin relatif non public, hors /public
+  extractedText String?
+  parsedJson   Json?
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model Skill {
+  id         String         @id @default(cuid())
+  profileId  String
+  name       String
+  category   String? // technologie | langue | formation | competence360
+  level      String?
+  fromResume Boolean        @default(false)
+  profile    StudentProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@unique([profileId, name])
+}
+
+model Experience {
+  id          String         @id @default(cuid())
+  profileId   String
+  title       String
+  company     String?
+  startDate   String?
+  endDate     String?
+  description String?
+  kind        String         @default("experience") // experience | formation
+  profile     StudentProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@index([profileId])
+}
+
+model JobSource {
+  id        String     @id @default(cuid())
+  slug      String     @unique
+  name      String
+  kind      SourceKind
+  enabled   Boolean    @default(true)
+  termsUrl  String? // conditions d'utilisation vérifiées
+  termsNote String?
+  lastRunAt DateTime?
+  lastError String?
+  offers    JobOffer[]
+}
+
+model JobOffer {
+  id            String       @id @default(cuid())
+  sourceId      String
+  externalId    String
+  dedupeKey     String // hash(titre|entreprise|ville) normalisé
+  title         String
+  company       String?
+  location      String?
+  contractType  ContractType @default(AUTRE)
+  description   String?
+  skills        String[]
+  sector        String?
+  publishedAt   DateTime?
+  deadline      DateTime?
+  url           String
+  collectedAt   DateTime     @default(now())
+  isDemo        Boolean      @default(false)
+  source        JobSource    @relation(fields: [sourceId], references: [id])
+  matches       JobMatch[]
+  favorites     Favorite[]
+  applications  Application[]
+
+  @@unique([sourceId, externalId])
+  @@index([dedupeKey])
+  @@index([contractType, publishedAt])
+  @@index([title])
+}
+
+model JobMatch {
+  id             String   @id @default(cuid())
+  userId         String
+  offerId        String
+  score          Int // 0-100 : compatibilité, PAS une probabilité d'embauche
+  matchedSkills  String[]
+  missingSkills  String[]
+  strengths      String[]
+  explanation    String
+  rejected       Boolean  @default(false)
+  engine         String // heuristic | llm
+  createdAt      DateTime @default(now())
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  offer          JobOffer @relation(fields: [offerId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, offerId])
+  @@index([userId, score])
+}
+
+model Favorite {
+  userId    String
+  offerId   String
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  offer     JobOffer @relation(fields: [offerId], references: [id], onDelete: Cascade)
+
+  @@id([userId, offerId])
+}
+
+model Application {
+  id            String            @id @default(cuid())
+  userId        String
+  offerId       String? // null = candidature spontanée
+  companyName   String
+  companySector String?
+  recipientEmail String?
+  status        ApplicationStatus @default(BROUILLON)
+  spontaneous   Boolean           @default(false)
+  skills360     String[]
+  unpaidOk      Boolean           @default(false) // stage de 2 mois pouvant ne pas être rémunéré
+  sentAt        DateTime?
+  respondedAt   DateTime?
+  validatedAt   DateTime? // validation humaine explicite
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+  user          User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  offer         JobOffer?         @relation(fields: [offerId], references: [id], onDelete: SetNull)
+  messages      GeneratedMessage[]
+  followUps     FollowUp[]
+
+  @@index([userId, status])
+  @@index([userId, sentAt])
+}
+
+model GeneratedMessage {
+  id            String      @id @default(cuid())
+  userId        String
+  applicationId String
+  kind          MessageKind
+  subject       String?
+  body          String
+  version       Int         @default(1)
+  edited        Boolean     @default(false)
+  createdAt     DateTime    @default(now())
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+
+  @@index([applicationId])
+}
+
+model EmailAccount {
+  id                String        @id @default(cuid())
+  userId            String
+  provider          EmailProvider
+  address           String
+  accessTokenEnc    String // mot de passe d'application (SMTP), chiffré AES-256-GCM
+  refreshTokenEnc   String?
+  expiresAt         DateTime?
+  createdAt         DateTime      @default(now())
+  user              User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, address])
+}
+
+model FollowUp {
+  id            String         @id @default(cuid())
+  userId        String
+  applicationId String
+  dueAt         DateTime
+  dayOffset     Int
+  status        FollowUpStatus @default(PLANIFIEE)
+  sentAt        DateTime?
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  application   Application    @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+
+  @@index([userId, dueAt])
+}
+
+model MarketStatistic {
+  id        String   @id @default(cuid())
+  period    String // ex. 2026-11
+  dimension String // sector | skill | contract | role
+  key       String
+  offers    Int      @default(0)
+  sent      Int      @default(0)
+  responses Int      @default(0)
+  avgResponseDays Float?
+  updatedAt DateTime @updatedAt
+
+  @@unique([period, dimension, key])
+}
+
+model ActivityLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  action    String
+  entity    String?
+  entityId  String?
+  meta      Json?
+  ip        String?
+  createdAt DateTime @default(now())
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([userId, createdAt])
+  @@index([action])
+}
