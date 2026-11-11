@@ -7,6 +7,7 @@
 - Limites de débit sur génération IA, import CV, synchronisation ; collecte avec délai minimal par source ; requêtes groupées (offres et scores).
 - CSP et HSTS ; comparaison du secret cron à temps constant ; rotation de clé (`ENCRYPTION_KEY_PREVIOUS`) et validation du format chiffré.
 - Suppression de compte : base d'abord, fichiers ensuite ; compétences du profil en transaction ; garde-fou anti-invention resserré ; `.gitignore` des identifiants.
+- Détail de la revue : `docs/revue-code-2026-11-11.md`.
 ## [0.5.0] - 2026-11-10 — Recette
 - Tests de sécurité e2e (isolation, routes, cookies, en-têtes, upload piégé), mobile, performance ; en-têtes HTTP de sécurité.
 - Recette automatisée sur build de production ; synchronisation e2e fiabilisée.
