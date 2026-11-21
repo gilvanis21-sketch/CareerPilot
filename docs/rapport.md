@@ -1,5 +1,5 @@
 # Rapport de projet — CareerPilot
-*Clinique de l'IT (CCCLX / aivancity)*
+*CareerPilot - développé par Arthur DADJO*
 
 ## 1. Contexte et objectif
 Les offres de stage et d'alternance sont dispersées ; les étudiants candidatent de façon peu ciblée et sans suivi. CareerPilot centralise : dépôt du CV, recherche d'offres, classement par compatibilité, génération de messages personnalisés, envoi **validé par l'étudiant** depuis sa propre messagerie, suivi, statistiques.

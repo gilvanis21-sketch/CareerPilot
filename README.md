@@ -1,6 +1,6 @@
 # CareerPilot — assistant de recherche de stage et d'alternance
 
-Projet CCCLX / aivancity. Next.js 16 (App Router) · TypeScript · Tailwind 4 · Prisma 7 · PostgreSQL.
+CareerPilot - développé par Arthur DADJO. Next.js 16 (App Router) · TypeScript · Tailwind 4 · Prisma 7 · PostgreSQL.
 
 ## Démarrage
 ```bash
