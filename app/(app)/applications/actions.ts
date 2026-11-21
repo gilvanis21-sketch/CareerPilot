@@ -11,7 +11,8 @@ import { generateMail, type GenProfile, type GenTarget } from "@/ai/generate";
 import { COMPETENCES_360 } from "@/ai/competences360";
 import { canSend } from "@/services/send-guard";
 import { startOfDay } from "@/lib/dates";
-import { friendlyMailError, sendMail, verifyAccount } from "@/services/mailer";
+import { friendlyMailError, sendMail, sendMailOAuth, verifyAccount } from "@/services/mailer";
+import { freshAccessToken } from "@/services/oauth";
 
 export type ActionState = { error?: string; ok?: string } | undefined;
 const EMAIL = z.string().trim().email();
@@ -107,15 +108,18 @@ async function doSend(userId: string, fd: FormData): Promise<ActionState> {
   if (claim.count === 0) return { error: "Envoi déjà traité ou message modifié : rechargez la page." };
 
   try {
-    await sendMail({
-      provider: account!.provider, address: account!.address, password: decrypt(account!.accessTokenEnc),
+    const mail = {
+      provider: account!.provider, address: account!.address,
       to: app.recipientEmail!, subject: msg!.subject ?? "Candidature", text: msg!.body,
       fromName: [prof.firstName, prof.lastName].filter(Boolean).join(" ") || undefined,
-    });
+    };
+    // Compte relié par OAuth2 (jeton de renouvellement présent) : envoi par API ; sinon mot de passe d'application (SMTP).
+    if (account!.refreshTokenEnc) await sendMailOAuth({ ...mail, accessToken: await freshAccessToken(account!) });
+    else await sendMail({ ...mail, password: decrypt(account!.accessTokenEnc) });
   } catch (e) {
     await db.application.updateMany({ where: { id: app.id, validatedAt: null }, data: { validatedAt: app.validatedAt } }); // rien n'est parti : on rend la validation
     await logActivity("mail.failed", { userId, entityId: app.id });
-    return { error: friendlyMailError(e) };
+    return { error: friendlyMailError(e, account!.provider) };
   }
   const now = new Date();
   await logActivity("mail.sent", { userId, entityId: app.id }); // jamais le contenu ni l'adresse en clair
@@ -185,10 +189,10 @@ export async function connectEmailAction(_: ActionState, fd: FormData): Promise<
   const p = acctSchema.safeParse(Object.fromEntries(fd));
   if (!p.success) return { error: "Informations invalides (adresse, mot de passe d'application)." };
   const password = p.data.password.replace(/\s+/g, ""); // Google affiche le mot de passe d'application en groupes séparés par des espaces
-  try { await verifyAccount(p.data.provider, p.data.address, password); } catch (e) { return { error: friendlyMailError(e) }; }
+  try { await verifyAccount(p.data.provider, p.data.address, password); } catch (e) { return { error: friendlyMailError(e, p.data.provider) }; }
   await db.emailAccount.upsert({
     where: { userId_address: { userId: user.id, address: p.data.address } },
-    update: { provider: p.data.provider, accessTokenEnc: encrypt(password) },
+    update: { provider: p.data.provider, accessTokenEnc: encrypt(password), refreshTokenEnc: null, expiresAt: null },
     create: { userId: user.id, provider: p.data.provider, address: p.data.address, accessTokenEnc: encrypt(password) },
   });
   await logActivity("email.connected", { userId: user.id, meta: { provider: p.data.provider } });

@@ -16,6 +16,9 @@ const securityHeaders = [
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  // pdf-parse (pdf.js) charge dynamiquement un fichier « pdf.worker.mjs » : empaqueté par Turbopack, ce fichier n'est pas
+  // copié dans .next et l'analyse d'un CV PDF échoue ("Setting up fake worker failed"). On le laisse résolu par Node.
+  serverExternalPackages: ["pdf-parse", "pdfjs-dist", "mammoth"],
   // Les CV font jusqu'à 5 Mo (+ surcoût multipart) ; la limite par défaut des Server Actions est de 1 Mo.
   experimental: { serverActions: { bodySizeLimit: "6mb" } },
   async headers() {

@@ -42,3 +42,13 @@ describe("parseResumeText", () => {
     expect(e.studyYear).toBeNull();
   });
 });
+
+describe("extraction PDF (fichier réel)", () => {
+  it("lit le texte d'un PDF et y retrouve les technologies", async () => {
+    const { readFileSync } = await import("node:fs");
+    const { extractText, parseResumeText: analyzeCv } = await import("@/services/cv-parser");
+    const text = await extractText(readFileSync("tests/fixtures/cv-fictif.pdf"), "application/pdf");
+    expect(text).toMatch(/Python/);
+    expect(JSON.stringify(analyzeCv(text).skills)).toMatch(/Python/);
+  });
+});

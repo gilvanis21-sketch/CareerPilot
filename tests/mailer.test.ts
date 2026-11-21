@@ -33,4 +33,10 @@ describe("envoi SMTP (serveur fictif local)", () => {
     expect(friendlyMailError(new Error("Invalid login: 535 secret-pass"))).not.toContain("secret-pass");
     expect(friendlyMailError(new Error("connect ECONNREFUSED"))).toMatch(/injoignable/);
   });
+  it("donne un conseil adapté au fournisseur", async () => {
+    const { friendlyMailError } = await import("@/services/mailer");
+    expect(friendlyMailError(new Error("Invalid login: 535 5.7.3 Authentication unsuccessful"), "OUTLOOK")).toMatch(/Microsoft refuse/);
+    expect(friendlyMailError(new Error("535-5.7.8 Username and Password not accepted"), "GMAIL")).toMatch(/mot de passe d'application/);
+    expect(friendlyMailError(new Error("535 5.7.3 Authentication unsuccessful"), "OUTLOOK")).not.toMatch(/Gmail refuse/);
+  });
 });

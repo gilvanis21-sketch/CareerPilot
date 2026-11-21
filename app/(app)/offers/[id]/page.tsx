@@ -17,7 +17,7 @@ export default async function OfferDetail({ params }: { params: Promise<{ id: st
       <Card className="space-y-2">
         <h1 className="text-2xl font-semibold text-teal-950">{offer.title}</h1>
         <p className="text-slate-600">{offer.company} · {offer.location} · {offer.contractType.toLowerCase()}</p>
-        <p className="text-xs text-slate-500">Source : {offer.source.name} · collectée le {offer.collectedAt.toLocaleDateString("fr-FR")}{offer.publishedAt && ` · publiée le ${offer.publishedAt.toLocaleDateString("fr-FR")}`}{offer.deadline && ` · limite ${offer.deadline.toLocaleDateString("fr-FR")}`}</p>
+        <p className="text-xs text-slate-600">Source : {offer.source.name} · collectée le {offer.collectedAt.toLocaleDateString("fr-FR")}{offer.publishedAt && ` · publiée le ${offer.publishedAt.toLocaleDateString("fr-FR")}`}{offer.deadline && ` · limite ${offer.deadline.toLocaleDateString("fr-FR")}`}</p>
         <p className="whitespace-pre-line pt-2 text-slate-800">{offer.description}</p>
         {offer.skills.length > 0 && <p className="text-sm"><b>Compétences demandées :</b> {offer.skills.join(", ")}</p>}
         <div className="flex gap-2 pt-2">

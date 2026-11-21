@@ -9,7 +9,7 @@ cp .env.example .env          # puis renseigner ENCRYPTION_KEY (openssl rand -he
 npm install
 npx prisma migrate dev        # applique les migrations
 npx prisma generate
-npm run dev                   # http://localhost:3000
+npm run dev                   # http://localhost:3112
 npm test                      # tests unitaires (vitest)
 ```
 Sans clé API, l'application tourne en **mode démonstration** (`AI_PROVIDER=mock`, offres fictives).
@@ -19,4 +19,4 @@ N'utiliser que des CV et données **fictifs** avant la recette.
 Voir `ROADMAP.md` et `CHANGELOG.md`.
 
 ## Documentation
-`docs/guide-utilisateur.md` · `docs/guide-installation.md` · `docs/guide-exploitation.md` · `docs/securite-rgpd.md` · `docs/connectors.md` · `docs/matching-evaluation.md` · `docs/PV-recette.md` · `docs/rapport.md` · `docs/soutenance.md` · `docs/sources-offres-options.md`
+`docs/guide-utilisateur.md` · `docs/guide-installation.md` · `docs/guide-exploitation.md` · `docs/securite-rgpd.md` · `docs/connectors.md` · `docs/oauth-messagerie.md` · `docs/matching-evaluation.md` · `docs/PV-recette.md` · `docs/rapport.md` · `docs/soutenance.md` · `docs/sources-offres-options.md`

@@ -21,7 +21,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           ))}
         </nav>
         <form action={logoutAction} className="mt-4">
-          <p className="mb-2 truncate text-xs text-teal-300">{user.email}</p>
+          <p className="mb-2 truncate text-xs text-teal-200">{user.email}</p>
           <Button variant="ghost" type="submit" className="w-full">Déconnexion</Button>
         </form>
       </aside>

@@ -11,6 +11,6 @@ export default defineConfig({
     url: "http://localhost:3111/login",
     reuseExistingServer: false,
     timeout: 600_000,
-    env: { MAIL_HOST_OVERRIDE: "127.0.0.1", MAIL_PORT_OVERRIDE: "2525", ALLOW_MAIL_OVERRIDE: "I_AM_RUNNING_TESTS" },
+    env: { ENABLE_DEMO_OFFERS: "1", MAIL_HOST_OVERRIDE: "127.0.0.1", MAIL_PORT_OVERRIDE: "2525", ALLOW_MAIL_OVERRIDE: "I_AM_RUNNING_TESTS" },
   },
 });

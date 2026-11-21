@@ -5,6 +5,8 @@ import { OfferCard } from "@/components/offer-card";
 import { Button, Card } from "@/components/ui";
 import { syncAction } from "./actions";
 import { linkedin } from "@/connectors/linkedin";
+import { demoEnabled } from "@/connectors/demo";
+import { laBonneAlternance } from "@/connectors/la-bonne-alternance";
 import type { Prisma } from "@/lib/generated/prisma/client";
 
 type SP = { q?: string; location?: string; company?: string; contract?: string; days?: string; skill?: string; fav?: string };
@@ -16,6 +18,7 @@ export default async function OffersPage({ searchParams }: { searchParams: Promi
 
   const offerWhere: Prisma.JobOfferWhereInput = { AND: [] };
   const and = offerWhere.AND as Prisma.JobOfferWhereInput[];
+  if (!demoEnabled()) and.push({ isDemo: false }); // les offres fictives ne sont plus affichées (ENABLE_DEMO_OFFERS=1 pour les revoir)
   if (sp.q) and.push({ OR: [{ title: { contains: sp.q, mode: "insensitive" } }, { description: { contains: sp.q, mode: "insensitive" } }] });
   if (sp.location) and.push({ location: { contains: sp.location, mode: "insensitive" } });
   if (sp.company) and.push({ company: { contains: sp.company, mode: "insensitive" } });
@@ -28,7 +31,7 @@ export default async function OffersPage({ searchParams }: { searchParams: Promi
 
   const [matches, total, favs] = await Promise.all([
     db.jobMatch.findMany({ where: { userId: user.id, rejected: false, offer: offerWhere }, include: { offer: { include: { source: true } } }, orderBy: { score: "desc" }, take: 60 }),
-    db.jobOffer.count(),
+    db.jobOffer.count({ where: demoEnabled() ? {} : { isDemo: false } }),
     db.favorite.findMany({ where: { userId: user.id }, select: { offerId: true } }),
   ]);
   const favSet = new Set(favs.map((f) => f.offerId));
@@ -58,8 +61,10 @@ export default async function OffersPage({ searchParams }: { searchParams: Promi
           <Button className="md:col-span-2">Filtrer</Button>
         </form>
       </Card>
-      <p className="text-sm text-slate-500">{matches.length} offre(s) affichée(s) sur {total} collectée(s), triées par compatibilité. LinkedIn : <a className="text-teal-800 underline" target="_blank" rel="noopener noreferrer" href={links[0].url}>ouvrir ma recherche préremplie</a> (aucune collecte automatique).</p>
-      {total === 0 && <Card>Aucune offre pour l’instant. Cliquez sur « Actualiser les offres » (mode démonstration : offres fictives).</Card>}
+      <p className="text-sm text-slate-600">{matches.length} offre(s) affichée(s) sur {total} collectée(s), triées par compatibilité. LinkedIn : <a className="text-teal-800 underline" target="_blank" rel="noopener noreferrer" href={links[0].url}>ouvrir ma recherche préremplie</a> (aucune collecte automatique).</p>
+      {total === 0 && (laBonneAlternance.isConfigured()
+        ? <Card>Aucune offre pour l’instant. Cliquez sur « Actualiser les offres » pour récupérer les offres d’alternance récentes (La bonne alternance).</Card>
+        : <Card>Aucune source d’offres réelles n’est configurée sur ce serveur. Ajoutez <code>LBA_API_KEY</code> (clé gratuite La bonne alternance, voir <code>docs/connectors.md</code>), redémarrez, puis cliquez sur « Actualiser les offres ».</Card>)}
       <div className="space-y-3">
         {matches.map((m) => (
           <OfferCard key={m.id} offerId={m.offerId} title={m.offer.title} company={m.offer.company} location={m.offer.location}

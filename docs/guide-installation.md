@@ -8,7 +8,7 @@ cp .env.example .env
 openssl rand -hex 32                      # → ENCRYPTION_KEY dans .env
 npm install
 npx prisma migrate deploy && npx prisma generate
-npm run dev                               # http://localhost:3000
+npm run dev                               # http://localhost:3112
 ```
 ## Variables (`.env`)
 | Variable | Rôle |

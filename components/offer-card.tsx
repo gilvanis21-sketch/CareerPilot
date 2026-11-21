@@ -20,7 +20,7 @@ export function OfferCard(p: Props) {
         </div>
         <span title="Compatibilité avec votre profil (pas une probabilité d'embauche)" className={`rounded-full px-3 py-1 text-sm font-semibold ${scoreColor(p.score)}`}>{p.score}/100</span>
       </div>
-      <p className="mt-2 flex flex-wrap gap-2 text-xs text-slate-500">
+      <p className="mt-2 flex flex-wrap gap-2 text-xs text-slate-600">
         <span className="rounded bg-slate-100 px-2 py-0.5">{p.contractType.toLowerCase()}</span>
         {p.publishedAt && <span>publiée le {p.publishedAt.toLocaleDateString("fr-FR")}</span>}
         <span>via {p.sourceName}</span>
@@ -32,7 +32,7 @@ export function OfferCard(p: Props) {
           <Button variant="ghost" aria-pressed={p.isFavorite}><Star size={16} className={p.isFavorite ? "fill-amber-400 text-amber-500" : ""} />{p.isFavorite ? "Favori" : "Ajouter aux favoris"}</Button></form>
         <form action={prepareApplicationAction}><input type="hidden" name="offerId" value={p.offerId} /><Button>Préparer ma candidature</Button></form>
         <form action={rejectAction} className="ml-auto"><input type="hidden" name="offerId" value={p.offerId} />
-          <button aria-label="Rejeter cette offre" title="Rejeter" className="rounded-lg p-2 text-slate-400 hover:bg-slate-100 hover:text-red-600"><X size={16} /></button></form>
+          <button aria-label="Rejeter cette offre" title="Rejeter" className="rounded-lg p-2 text-slate-600 hover:bg-slate-100 hover:text-red-600"><X size={16} /></button></form>
       </div>
     </article>
   );

@@ -1,13 +1,16 @@
 import { BENCHMARK_OFFERS } from "@/data/benchmark";
 import type { Connector, RawOffer } from "./types";
 
+export const demoEnabled = () => process.env.ENABLE_DEMO_OFFERS === "1";
+
 /** Source de démonstration : offres 100 % fictives (jeu de référence). Aucune donnée réelle. */
 export const demo: Connector = {
   slug: "demo",
   name: "Démo (offres fictives)",
   kind: "DEMO",
   termsNote: "Données fictives générées pour le développement et la recette.",
-  isConfigured: () => true,
+  // Désactivée par défaut : l'application affiche de vraies offres. ENABLE_DEMO_OFFERS=1 la réactive (tests, démonstration).
+  isConfigured: () => demoEnabled(),
   async search(): Promise<RawOffer[]> {
     return BENCHMARK_OFFERS.map((o) => ({
       externalId: o.externalId,

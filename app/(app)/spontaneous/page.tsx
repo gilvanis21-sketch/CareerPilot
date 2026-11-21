@@ -7,7 +7,7 @@ export default async function Spontaneous() {
   return (
     <div className="max-w-3xl space-y-4">
       <h1 className="text-2xl font-semibold text-teal-950">Candidature spontanée</h1>
-      <p className="text-sm text-slate-500">Contactez une entreprise qui ne publie pas d’offre. Vous prévisualisez, modifiez et validez avant tout envoi.</p>
+      <p className="text-sm text-slate-600">Contactez une entreprise qui ne publie pas d’offre. Vous prévisualisez, modifiez et validez avant tout envoi.</p>
       <SpontaneousForm skills={COMPETENCES_360} goal={user.profile?.goal ?? "ALTERNANCE"} />
     </div>
   );

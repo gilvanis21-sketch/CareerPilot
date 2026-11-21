@@ -11,7 +11,7 @@ export function AuthForm({ mode, action }: { mode: "login" | "register"; action:
     <main className="flex min-h-screen items-center justify-center bg-slate-50 p-4">
       <Card className="w-full max-w-md">
         <h1 className="text-2xl font-semibold text-teal-900">CareerPilot</h1>
-        <p className="mb-6 text-sm text-slate-500">{reg ? "Créez votre espace étudiant" : "Connectez-vous à votre espace"}</p>
+        <p className="mb-6 text-sm text-slate-600">{reg ? "Créez votre espace étudiant" : "Connectez-vous à votre espace"}</p>
         <form action={formAction} className="space-y-4">
           <Field label="Email" name="email" type="email" autoComplete="email" required defaultValue={state?.email} />
           <Field label="Mot de passe" name="password" type="password" autoComplete={reg ? "new-password" : "current-password"} required error={state?.fieldErrors?.password} />
@@ -25,7 +25,7 @@ export function AuthForm({ mode, action }: { mode: "login" | "register"; action:
           <Button type="submit" disabled={pending} className="w-full">{pending ? "…" : reg ? "Créer mon compte" : "Se connecter"}</Button>
         </form>
         {!reg && <p className="mt-3 text-center text-sm"><Link className="text-teal-800 underline" href="/forgot">Mot de passe oublié ?</Link></p>}
-        <p className="mt-4 text-center text-sm text-slate-500">
+        <p className="mt-4 text-center text-sm text-slate-600">
           {reg ? <>Déjà inscrit ? <Link className="text-teal-800 underline" href="/login">Connexion</Link></> : <>Pas de compte ? <Link className="text-teal-800 underline" href="/register">Inscription</Link></>}
         </p>
       </Card>

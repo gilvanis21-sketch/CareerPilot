@@ -15,7 +15,7 @@ export function SpontaneousForm({ skills, goal }: { skills: readonly string[]; g
         <Field label="Nom de l’entreprise" name="company" required />
         <Field label="Secteur" name="sector" value={sector} onChange={(e) => setSector(e.target.value)} placeholder="ex : banque, e-commerce, santé…" />
         <div className="md:col-span-2"><Field label="Adresse email professionnelle de contact (à saisir vous-même)" name="email" type="email" required />
-          <p className="mt-1 text-xs text-slate-500">Trouvez-la sur le site de l’entreprise ou auprès d’un contact : l’application n’en devine jamais.</p></div>
+          <p className="mt-1 text-xs text-slate-600">Trouvez-la sur le site de l’entreprise ou auprès d’un contact : l’application n’en devine jamais.</p></div>
       </Card>
       <Card className="space-y-3">
         <div className="flex items-center justify-between"><h2 className="font-semibold">Compétences 360 à mettre en avant</h2>

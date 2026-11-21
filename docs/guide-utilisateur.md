@@ -20,7 +20,7 @@
 - **Candidature spontanée** : entreprise, secteur, e-mail de contact, compétences 360 (suggestion selon le secteur), option stage de 2 mois pouvant être non rémunéré.
 
 ## 4. Connecter sa messagerie (Paramètres)
-Gmail : activez la validation en 2 étapes, créez un **mot de passe d'application** (compte Google → Sécurité) et saisissez-le. N'utilisez jamais votre mot de passe habituel. Outlook personnel n'est plus compatible.
+Cliquez sur **Se connecter avec Google** ou **Se connecter avec Microsoft** (Paramètres → Messagerie d'envoi) : vous autorisez uniquement l'envoi, sans saisir de mot de passe (voir `docs/oauth-messagerie.md`). Autre méthode pour Gmail : validation en 2 étapes, **mot de passe d'application** (compte Google → Sécurité), jamais votre mot de passe habituel.
 Plafond quotidien et jours de relance sont réglables (par défaut J+7 et J+15).
 
 ## 5. Suivre

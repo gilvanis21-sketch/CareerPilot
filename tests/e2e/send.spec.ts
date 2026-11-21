@@ -29,6 +29,7 @@ test("candidature spontanée : génération, validation obligatoire, envoi, suiv
 
   // Connexion de la messagerie (serveur fictif)
   await page.goto("/settings");
+  await page.getByText("Autre méthode : mot de passe d’application").click(); // section repliée par défaut (OAuth2 en premier)
   const form = page.locator("form", { hasText: "Connecter et vérifier" });
   await form.locator('input[name="address"]').fill("camille.test@gmail.com");
   await form.locator('input[name="password"]').fill("abcd efgh ijkl mnop");

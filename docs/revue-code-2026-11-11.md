@@ -48,6 +48,6 @@ Revue complète du code (authentification, actions serveur, services, connecteur
 
 ## 4. Exploitation
 - Base : `docker compose up -d` (Postgres, port 5433), puis `npx prisma migrate deploy`.
-- Lancement : `npm run dev` (http://localhost:3000) ; production : `npm run build && npm start`.
+- Lancement : `npm run dev` (http://localhost:3112) ; production : `npm run build && npm start`.
 - Nouvelles variables (`.env.example`) : `TRUST_PROXY` (« 1 » derrière un proxy de confiance), `ENCRYPTION_KEY_PREVIOUS`, `SMTP_*`, `APP_URL` (obligatoire en production).
 - Tests : `npm test` (unitaires), `npm run test:e2e` (nécessite la base).

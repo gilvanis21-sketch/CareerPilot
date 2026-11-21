@@ -15,7 +15,7 @@ export function ForgotForm() {
           <Field label="Email" name="email" type="email" required />
           {s?.error && <p role="alert" className="text-sm text-red-600">{s.error}</p>}
           {s?.sent && <p className="text-sm text-teal-800">Si ce compte existe, un lien de réinitialisation a été envoyé.</p>}
-          {s?.devLink && <p className="break-all text-xs text-slate-500">[dev] <a className="underline" href={s.devLink}>{s.devLink}</a></p>}
+          {s?.devLink && <p className="break-all text-xs text-slate-600">[dev] <a className="underline" href={s.devLink}>{s.devLink}</a></p>}
           <Button disabled={pending} className="w-full">Envoyer le lien</Button>
         </form>
         <Link href="/login" className="block text-center text-sm text-teal-800 underline">Retour</Link>

@@ -32,7 +32,7 @@ export function ApplicationEditor(p: Props) {
         <h2 className="font-semibold">Envoi</h2>
         {!p.hasAccount ? <p className="text-sm text-amber-700">Aucune messagerie connectée. <a className="underline" href="/settings">Connectez Gmail/Outlook dans les Paramètres</a> ou copiez le message pour postuler sur le site de l’entreprise.</p>
           : <p className="text-sm text-slate-600">Envoi depuis <b>{p.accountAddress}</b> · {p.remaining}/{p.limit} envois restants aujourd’hui.</p>}
-        {!p.validated && <p className="text-sm text-slate-500">Étape 1 : relisez, enregistrez puis cliquez sur « Valider ». Toute modification annule la validation.</p>}
+        {!p.validated && <p className="text-sm text-slate-600">Étape 1 : relisez, enregistrez puis cliquez sur « Valider ». Toute modification annule la validation.</p>}
         <form action={send} className="space-y-3">
           <input type="hidden" name="id" value={p.id} />
           <label className="flex items-start gap-2 text-sm"><input type="checkbox" name="confirm" className="mt-1" />Je confirme avoir relu ce message et j’autorise son envoi depuis ma messagerie.</label>
